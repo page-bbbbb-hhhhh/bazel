@@ -1041,7 +1041,7 @@ class PatchTest(unittest2.TestCase):
         patcher.stop()
 
         self.assertIsNot(m1, m2)
-        for mock in m1, m2:
+        for _ in m1, m2:
             self.assertNotCallable(m1)
 
 
@@ -1054,7 +1054,7 @@ class PatchTest(unittest2.TestCase):
         patcher.stop()
 
         self.assertIsNot(m1, m2)
-        for mock in m1, m2:
+        for _ in m1, m2:
             self.assertNotCallable(m1)
 
 

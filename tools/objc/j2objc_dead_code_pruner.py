@@ -207,7 +207,7 @@ def _DuplicatedFiles(archive_source_file_mapping):
     A list containing files with duplicated base names.
   """
   duplicated_files = []
-  dict_with_duplicates = dict()
+  dict_with_duplicates = {}
 
   for source_files in archive_source_file_mapping.values():
     for source_file in source_files:
@@ -217,10 +217,10 @@ def _DuplicatedFiles(archive_source_file_mapping):
         dict_with_duplicates[file_basename].append(file_without_ext)
       else:
         dict_with_duplicates[file_basename] = [file_without_ext]
-    for basename in dict_with_duplicates:
-      if len(dict_with_duplicates[basename]) > 1:
+    for basename, value in dict_with_duplicates.items():
+      if len(value) > 1:
         duplicated_files.extend(dict_with_duplicates[basename])
-    dict_with_duplicates = dict()
+    dict_with_duplicates = {}
 
   return duplicated_files
 
@@ -404,7 +404,7 @@ def BuildArtifactSourceTree(files, file_open=open):
    A dict mapping build artifacts (possibly generated source files) to the
    corresponding direct dependent source files.
   """
-  tree = dict()
+  tree = {}
   if not files:
     return tree
   for filename in files.split(','):

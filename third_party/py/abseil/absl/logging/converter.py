@@ -43,6 +43,7 @@ representation, before manipulating the levels, and then only to cpp
 or absl if those level schemes are absolutely necessary.
 """
 
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -71,7 +72,7 @@ ABSL_LEVELS = {ABSL_FATAL: 'FATAL',
                ABSL_DEBUG: 'DEBUG'}
 
 # Inverts the ABSL_LEVELS dictionary
-ABSL_NAMES = dict((v, k) for (k, v) in ABSL_LEVELS.items())
+ABSL_NAMES = {v: k for (k, v) in ABSL_LEVELS.items()}
 
 ABSL_TO_STANDARD = {ABSL_FATAL: STANDARD_CRITICAL,
                     ABSL_ERROR: STANDARD_ERROR,
@@ -80,7 +81,7 @@ ABSL_TO_STANDARD = {ABSL_FATAL: STANDARD_CRITICAL,
                     ABSL_DEBUG: STANDARD_DEBUG}
 
 # Inverts the ABSL_TO_STANDARD
-STANDARD_TO_ABSL = dict((v, k) for (k, v) in ABSL_TO_STANDARD.items())
+STANDARD_TO_ABSL = {v: k for (k, v) in ABSL_TO_STANDARD.items()}
 
 
 def get_initial_for_level(level):

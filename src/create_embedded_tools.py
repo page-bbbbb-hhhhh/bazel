@@ -81,7 +81,7 @@ def get_input_files(argsfile):
     ValueError: When two input files map to the same output file.
   """
   with open(argsfile, 'r') as f:
-    input_files = sorted(set(x.strip() for x in f.readlines()))
+    input_files = sorted({x.strip() for x in f.readlines()})
 
     result = {}
     for input_file in input_files:

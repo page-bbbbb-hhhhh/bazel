@@ -54,7 +54,7 @@ def HasWindowsExecutableExtension(path):
 
 PYTHON_BINARY = '%python_binary%'
 if IsWindows() and not HasWindowsExecutableExtension(PYTHON_BINARY):
-  PYTHON_BINARY = PYTHON_BINARY + '.exe'
+  PYTHON_BINARY += '.exe'
 
 def SearchPath(name):
   """Finds a file in a given search path."""

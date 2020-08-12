@@ -234,13 +234,10 @@ def _aquery_diff(before_proto, after_proto, attrs, before_file, after_file):
 
 def to_absolute_path(path):
   path = os.path.expanduser(path)
-  if os.path.isabs(path):
-    return path
+  if not os.path.isabs(path) and "BUILD_WORKING_DIRECTORY" in os.environ:
+    return os.path.join(os.environ["BUILD_WORKING_DIRECTORY"], path)
   else:
-    if "BUILD_WORKING_DIRECTORY" in os.environ:
-      return os.path.join(os.environ["BUILD_WORKING_DIRECTORY"], path)
-    else:
-      return path
+    return path
 
 
 def main(unused_argv):

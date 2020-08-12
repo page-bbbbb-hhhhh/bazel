@@ -229,9 +229,7 @@ def _copy_func_details(func, funcopy):
 def _callable(obj):
     if isinstance(obj, ClassTypes):
         return True
-    if getattr(obj, '__call__', None) is not None:
-        return True
-    return False
+    return getattr(obj, '__call__', None) is not None
 
 
 def _is_list(obj):
@@ -252,10 +250,7 @@ def _instance_callable(obj):
     if klass.__dict__.get('__call__') is not None:
         return True
 
-    for base in klass.__bases__:
-        if _instance_callable(base):
-            return True
-    return False
+    return any(_instance_callable(base) for base in klass.__bases__)
 
 
 def _set_signature(mock, original, instance=False):
@@ -310,7 +305,7 @@ def _setup_func(funcopy, mock):
         funcopy.mock_calls = _CallList()
         mock.reset_mock()
         ret = funcopy.return_value
-        if _is_instance_mock(ret) and not ret is mock:
+        if _is_instance_mock(ret) and ret is not mock:
             ret.reset_mock()
 
     funcopy.called = False
@@ -418,7 +413,7 @@ class _CallList(list):
         if len_value > len_self:
             return False
 
-        for i in range(0, len_self - len_value + 1):
+        for i in range(len_self - len_value + 1):
             sub_list = self[i:i+len_value]
             if sub_list == value:
                 return True
@@ -470,8 +465,7 @@ class NonCallableMock(Base):
         # so we can create magic methods on the
         # class without stomping on other mocks
         new = type(cls.__name__, (cls,), {'__doc__': cls.__doc__})
-        instance = object.__new__(new)
-        return instance
+        return object.__new__(new)
 
 
     def __init__(
@@ -541,11 +535,7 @@ class NonCallableMock(Base):
         _spec_class = None
 
         if spec is not None and not _is_list(spec):
-            if isinstance(spec, ClassTypes):
-                _spec_class = spec
-            else:
-                _spec_class = _get_class(spec)
-
+            _spec_class = spec if isinstance(spec, ClassTypes) else _get_class(spec)
             spec = dir(spec)
 
         __dict__ = self.__dict__
@@ -711,9 +701,8 @@ class NonCallableMock(Base):
 
         _name_list = list(reversed(_name_list))
         _first = last._mock_name or 'mock'
-        if len(_name_list) > 1:
-            if _name_list[1] not in ('()', '().'):
-                _first += '.'
+        if len(_name_list) > 1 and _name_list[1] not in ('()', '().'):
+            _first += '.'
         _name_list[0] = _first
         name = ''.join(_name_list)
 
@@ -726,7 +715,7 @@ class NonCallableMock(Base):
             spec_string = ' spec=%r'
             if self._spec_set:
                 spec_string = ' spec_set=%r'
-            spec_string = spec_string % self._spec_class.__name__
+            spec_string %= self._spec_class.__name__
         return "<%s%s%s id='%s'>" % (
             type(self).__name__,
             name_string,
@@ -839,7 +828,7 @@ class NonCallableMock(Base):
         """assert that the mock was called exactly once and with the specified
         arguments."""
         self = _mock_self
-        if not self.call_count == 1:
+        if self.call_count != 1:
             msg = ("Expected to be called once. Called %s times." %
                    self.call_count)
             raise AssertionError(msg)
@@ -1748,10 +1737,8 @@ def _get_method(name, func):
     return method
 
 
-_magics = set(
-    '__%s__' % method for method in
-    ' '.join([magic_methods, numerics, inplace, right, extra]).split()
-)
+_magics = {'__%s__' % method for method in
+    ' '.join([magic_methods, numerics, inplace, right, extra]).split()}
 
 _all_magics = _magics | _non_defaults
 
@@ -1991,8 +1978,15 @@ class _Call(tuple):
         args = ()
         kwargs = {}
         _len = len(value)
-        if _len == 3:
-            name, args, kwargs = value
+        if _len == 1:
+            value, = value
+            if isinstance(value, basestring):
+                name = value
+            elif isinstance(value, tuple):
+                args = value
+            else:
+                kwargs = value
+
         elif _len == 2:
             first, second = value
             if isinstance(first, basestring):
@@ -2003,15 +1997,8 @@ class _Call(tuple):
                     kwargs = second
             else:
                 args, kwargs = first, second
-        elif _len == 1:
-            value, = value
-            if isinstance(value, basestring):
-                name = value
-            elif isinstance(value, tuple):
-                args = value
-            else:
-                kwargs = value
-
+        elif _len == 3:
+            name, args, kwargs = value
         if two:
             return tuple.__new__(cls, (args, kwargs))
 

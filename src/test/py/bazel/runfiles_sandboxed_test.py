@@ -98,9 +98,8 @@ class RunfilesSandboxedTest(test_base.TestBase):
 
     if len(stdout_lines) != 8:
       self._FailWithContents("wrong number of output lines", stdout_lines)
-    i = 0
-    for lang in [("py", "Python", "bar.py"), ("java", "Java", "Bar.java"),
-                 ("sh", "Bash", "bar.sh"), ("cc", "C++", "bar.cc")]:
+    for i, lang in enumerate([("py", "Python", "bar.py"), ("java", "Java", "Bar.java"),
+                 ("sh", "Bash", "bar.sh"), ("cc", "C++", "bar.cc")]):
       # Check that the bar-<language> binary printed the expected output.
       if stdout_lines[i * 2] != "Hello %s Bar!" % lang[1]:
         self._FailWithContents("wrong line for " + lang[1], stdout_lines)
@@ -116,8 +115,6 @@ class RunfilesSandboxedTest(test_base.TestBase):
       if data_files[i] != "data for " + lang[2]:
         self._FailWithContents("runfile does not exist for " + lang[1],
                                stdout_lines)
-
-      i += 1
 
 
 if __name__ == "__main__":

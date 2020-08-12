@@ -68,7 +68,9 @@ class ActionTempTest(test_base.TestBase):
           expected_tmpdir_regex=os.path.basename(tmp_dir),
           bazel_bin=bazel_bin,
           bazel_genfiles=bazel_genfiles,
-          env_add=dict((k, tmp_dir) for k in self._TempEnvvars()))
+          env_add={k: tmp_dir
+                   for k in self._TempEnvvars()},
+      )
 
     _Impl(self.ScratchDir(strategy + '-temp-1'))
     # Assert that the actions pick up the current client environment.
@@ -205,7 +207,7 @@ class ActionTempTest(test_base.TestBase):
     for line in stderr:
       m = pattern.match(line)
       if m:
-        return set(e.strip() for e in m.groups()[0].split(','))
+        return {e.strip() for e in m.groups()[0].split(',')}
     return []
 
   def _BuildRules(self,

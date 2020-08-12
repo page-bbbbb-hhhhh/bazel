@@ -117,10 +117,7 @@ class UnrecognizedFlagError(Error):
   def __init__(self, flagname, flagvalue='', suggestions=None):
     self.flagname = flagname
     self.flagvalue = flagvalue
-    if suggestions:
-      tip = '. Did you mean: %s?' % ', '.join(suggestions)
-    else:
-      tip = ''
+    tip = '. Did you mean: %s?' % ', '.join(suggestions) if suggestions else ''
     Error.__init__(
         self, 'Unknown command line flag \'%s\'%s' % (flagname, tip))
 

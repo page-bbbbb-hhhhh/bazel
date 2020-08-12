@@ -626,7 +626,7 @@ class MockTest(unittest2.TestCase):
     def test_dir(self):
         mock = Mock()
         attrs = set(dir(mock))
-        type_attrs = set([m for m in dir(Mock) if not m.startswith('_')])
+        type_attrs = {m for m in dir(Mock) if not m.startswith('_')}
 
         # all public attributes from the type are included
         self.assertEqual(set(), type_attrs - attrs)
@@ -756,11 +756,11 @@ class MockTest(unittest2.TestCase):
                 meth, 1, 2, 3
             )
 
+        actual = "foo(1, '2', 3, foo='foo')"
+        expected = "foo()"
+        message = 'Expected call: %s\nActual call: %s'
         # empty
         for meth in asserters:
-            actual = "foo(1, '2', 3, foo='foo')"
-            expected = "foo()"
-            message = 'Expected call: %s\nActual call: %s'
             self.assertRaisesWithMsg(
                 AssertionError, message % (expected, actual), meth
             )

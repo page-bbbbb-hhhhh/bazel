@@ -67,9 +67,11 @@ def RunJ2ObjC(java, jvm_flags, j2objc, main_class, output_file_path,
     if fd:
       os.close(fd)
   try:
-    j2objc_cmd = [java]
-    j2objc_cmd.extend(filter(None, jvm_flags.split(',')))
-    j2objc_cmd.extend(['-cp', j2objc, main_class])
+    j2objc_cmd = [
+        java,
+        *filter(None, jvm_flags.split(',')),
+        *['-cp', j2objc, main_class],
+    ]
     j2objc_cmd.extend(['@%s' % param_filename])
     subprocess.check_call(j2objc_cmd, stderr=subprocess.STDOUT)
   finally:
@@ -99,7 +101,7 @@ def WriteDepMappingFile(objc_files,
   Returns:
     None.
   """
-  dep_mapping = dict()
+  dep_mapping = {}
   input_file_queue = Queue.Queue()
   output_dep_mapping_queue = Queue.Queue()
   error_message_queue = Queue.Queue()
@@ -226,25 +228,24 @@ def UnzipSourceJarSources(source_jars):
     A tuple of the temporary output root and a list of root-relative paths of
     unzipped Java files
   """
-  srcjar_java_files = []
-  if source_jars:
-    tmp_input_root = tempfile.mkdtemp()
-    for source_jar in source_jars:
-      zip_ref = zipfile.ZipFile(source_jar, 'r')
-      zip_entries = []
-
-      for file_entry in zip_ref.namelist():
-        # We only care about Java source files.
-        if file_entry.endswith('.java'):
-          zip_entries.append(file_entry)
-
-      zip_ref.extractall(tmp_input_root, zip_entries)
-      zip_ref.close()
-      srcjar_java_files.extend(zip_entries)
-
-    return (tmp_input_root, srcjar_java_files)
-  else:
+  if not source_jars:
     return None
+  tmp_input_root = tempfile.mkdtemp()
+  srcjar_java_files = []
+  for source_jar in source_jars:
+    zip_ref = zipfile.ZipFile(source_jar, 'r')
+    zip_entries = []
+
+    for file_entry in zip_ref.namelist():
+      # We only care about Java source files.
+      if file_entry.endswith('.java'):
+        zip_entries.append(file_entry)
+
+    zip_ref.extractall(tmp_input_root, zip_entries)
+    zip_ref.close()
+    srcjar_java_files.extend(zip_entries)
+
+  return (tmp_input_root, srcjar_java_files)
 
 
 def RenameGenJarObjcFileRootInFileContent(tmp_objc_file_root,
@@ -280,10 +281,10 @@ def RenameGenJarObjcFileRootInFileContent(tmp_objc_file_root,
         'sed',
         '-i',
         '-e',
-        's|%s/|%s::|g' % (j2objc_source_paths[1], gen_src_jar)
+        's|%s/|%s::|g' % (j2objc_source_paths[1], gen_src_jar),
+        *abs_genjar_objc_source_files,
+        *abs_genjar_objc_header_files,
     ]
-    cmd.extend(abs_genjar_objc_source_files)
-    cmd.extend(abs_genjar_objc_header_files)
     execute(cmd, stderr=subprocess.STDOUT)
 
 

@@ -74,8 +74,8 @@ class CmdLineDifferTest(unittest.TestCase):
         }],
         artifact_paths=["exec/path/zero", "exec/path/one", "exec/path/two"])
     mock_stdout = StringIO()
-    attrs = ["cmdline"]
     with mock.patch("sys.stdout", mock_stdout):
+      attrs = ["cmdline"]
       aquery_differ._aquery_diff(action_graph, action_graph, attrs, "before",
                                  "after")
       self.assertEqual(mock_stdout.getvalue(), "No difference\n")
@@ -99,8 +99,8 @@ class CmdLineDifferTest(unittest.TestCase):
         artifact_paths=["exec/path/zero", "exec/path/one"])
 
     mock_stdout = StringIO()
-    attrs = ["cmdline"]
     with mock.patch("sys.stdout", mock_stdout):
+      attrs = ["cmdline"]
       aquery_differ._aquery_diff(first, second, attrs, "before", "after")
       self.assertEqual(mock_stdout.getvalue(), "No difference\n")
 
@@ -128,13 +128,13 @@ class CmdLineDifferTest(unittest.TestCase):
         artifact_paths=["exec/path/zero", "exec/path/one", "exec/path/two"],
     )
 
-    expected_error = ("Aquery output 'before' change contains an action "
-                      "that generates the following outputs that aquery "
-                      "output 'after' change doesn't:\nexec/path/two\n\n")
     mock_stdout = StringIO()
-    attrs = ["cmdline"]
     with mock.patch("sys.stdout", mock_stdout):
+      attrs = ["cmdline"]
       aquery_differ._aquery_diff(first, second, attrs, "before", "after")
+      expected_error = ("Aquery output 'before' change contains an action "
+                        "that generates the following outputs that aquery "
+                        "output 'after' change doesn't:\nexec/path/two\n\n")
       self.assertEqual(mock_stdout.getvalue(), expected_error)
 
   def test_second_has_extra_output_files(self):
@@ -161,13 +161,13 @@ class CmdLineDifferTest(unittest.TestCase):
         artifact_paths=["exec/path/zero", "exec/path/one", "exec/path/two"],
     )
 
-    expected_error = ("Aquery output 'after' change contains an action that"
-                      " generates the following outputs that aquery"
-                      " output 'before' change doesn't:\nexec/path/two\n\n")
     mock_stdout = StringIO()
-    attrs = ["cmdline"]
     with mock.patch("sys.stdout", mock_stdout):
+      attrs = ["cmdline"]
       aquery_differ._aquery_diff(first, second, attrs, "before", "after")
+      expected_error = ("Aquery output 'after' change contains an action that"
+                        " generates the following outputs that aquery"
+                        " output 'before' change doesn't:\nexec/path/two\n\n")
       self.assertEqual(mock_stdout.getvalue(), expected_error)
 
   def test_different_command_lines(self):
@@ -198,22 +198,22 @@ class CmdLineDifferTest(unittest.TestCase):
         artifact_paths=["exec/path/zero", "exec/path/one", "exec/path/two"],
     )
 
-    expected_error_one = "\n".join([
-        "Difference in the action that generates the following output(s):",
-        "\texec/path/two", "--- before", "+++ after", "@@ -1 +1,2 @@", " -c",
-        "+-d", "\n"
-    ])
-    expected_error_two = "\n".join([
-        "Difference in the action that generates the following output(s):",
-        "\texec/path/one", "\texec/path/zero", "--- before", "+++ after",
-        "@@ -1,2 +1,2 @@", " -a", "--d", "+-b", "\n"
-    ])
-    attrs = ["cmdline"]
-
     mock_stdout = StringIO()
     with mock.patch("sys.stdout", mock_stdout):
+      attrs = ["cmdline"]
+
       aquery_differ._aquery_diff(first, second, attrs, "before", "after")
+      expected_error_one = "\n".join([
+          "Difference in the action that generates the following output(s):",
+          "\texec/path/two", "--- before", "+++ after", "@@ -1 +1,2 @@", " -c",
+          "+-d", "\n"
+      ])
       self.assertIn(expected_error_one, mock_stdout.getvalue())
+      expected_error_two = "\n".join([
+          "Difference in the action that generates the following output(s):",
+          "\texec/path/one", "\texec/path/zero", "--- before", "+++ after",
+          "@@ -1,2 +1,2 @@", " -a", "--d", "+-b", "\n"
+      ])
       self.assertIn(expected_error_two, mock_stdout.getvalue())
 
   def test_different_inputs(self):
@@ -245,16 +245,16 @@ class CmdLineDifferTest(unittest.TestCase):
             "direct_artifact_ids": ["0"]
         }])
 
-    expected_error_one = "\n".join([
-        "Difference in the action that generates the following output(s):",
-        "\texec/path/one", "\texec/path/zero", "--- before", "+++ after",
-        "@@ -1,2 +1 @@", "-exec/path/one", " exec/path/zero", "\n"
-    ])
-    attrs = ["inputs"]
-
     mock_stdout = StringIO()
     with mock.patch("sys.stdout", mock_stdout):
+      attrs = ["inputs"]
+
       aquery_differ._aquery_diff(first, second, attrs, "before", "after")
+      expected_error_one = "\n".join([
+          "Difference in the action that generates the following output(s):",
+          "\texec/path/one", "\texec/path/zero", "--- before", "+++ after",
+          "@@ -1,2 +1 @@", "-exec/path/one", " exec/path/zero", "\n"
+      ])
       self.assertIn(expected_error_one, mock_stdout.getvalue())
 
 
