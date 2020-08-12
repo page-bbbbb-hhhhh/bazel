@@ -48,10 +48,7 @@ def main():
 
   # Run a subprocess, propagate the runfiles envvar to it. The subprocess will
   # use this process's runfiles manifest or runfiles directory.
-  if IsWindows():
-    env = {"SYSTEMROOT": os.environ["SYSTEMROOT"]}
-  else:
-    env = {}
+  env = {"SYSTEMROOT": os.environ["SYSTEMROOT"]} if IsWindows() else {}
   env.update(r.EnvVars())
   for lang in ["py", "java", "sh", "cc"]:
     p = subprocess.Popen(

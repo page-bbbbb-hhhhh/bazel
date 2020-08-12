@@ -122,10 +122,7 @@ class TarFileWriterTest(unittest.TestCase):
             )
         self.assertTrue(i < len(content), error_msg)
         for k, v in content[i].items():
-          if k == "data":
-            value = f.extractfile(current).read()
-          else:
-            value = getattr(current, k)
+          value = f.extractfile(current).read() if k == "data" else getattr(current, k)
           error_msg = " ".join([
               "Value `%s` for key `%s` of file" % (value, k),
               "%s in archive %s does" % (current.name, tar),

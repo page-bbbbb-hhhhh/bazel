@@ -119,8 +119,8 @@ class BazelExternalRepositoryTest(test_base.TestBase):
         '    sha256 = ',
         '  "c9c32a48ff65f6319885246b1bfc704e60dd72fb0405dfafdffe403421a4c83a",'
         ')',
+        *self.GetDefaultRepoRules(),
     ]
-    rule_definition.extend(self.GetDefaultRepoRules())
     self.ScratchFile('WORKSPACE', rule_definition)
     # In the archive, A is a symlink pointing to B
     self.ScratchFile('archive_with_symlink.BUILD', [
@@ -161,8 +161,8 @@ class BazelExternalRepositoryTest(test_base.TestBase):
         '    path = "./repo",',
         '    build_file_content = "exports_files([\'foo.bzl\'])",',
         ')',
+        *self.GetDefaultRepoRules(),
     ]
-    rule_definition.extend(self.GetDefaultRepoRules())
     self.ScratchFile('WORKSPACE', rule_definition)
     self.CreateWorkspaceWithDefaultRepos('repo/WORKSPACE')
     self._CreatePyWritingStarlarkRule('hello!')

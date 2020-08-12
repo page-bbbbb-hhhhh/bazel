@@ -183,9 +183,9 @@ class MultiFlagsValidator(Validator):
 
   def print_flags_with_values(self, flag_values):
     prefix = 'flags '
-    flags_with_values = []
-    for key in self.flag_names:
-      flags_with_values.append('%s=%s' % (key, flag_values[key].value))
+    flags_with_values = [
+        '%s=%s' % (key, flag_values[key].value) for key in self.flag_names
+    ]
     return prefix + ', '.join(flags_with_values)
 
   def get_flags_names(self):

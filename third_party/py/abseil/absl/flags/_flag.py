@@ -191,10 +191,7 @@ class Flag(object):
   def _set_default(self, value):
     """Changes the default value (and current value too) for this Flag."""
     self.default_unparsed = value
-    if value is None:
-      self.default = None
-    else:
-      self.default = self._parse(value)
+    self.default = None if value is None else self._parse(value)
     self.default_as_str = self._get_parsed_value_as_string(self.default)
     if self.using_default_value:
       self.value = self.default
@@ -306,11 +303,8 @@ class EnumFlag(Flag):
     self.help = '<%s>: %s' % ('|'.join(enum_values), self.help)
 
   def _extra_xml_dom_elements(self, doc):
-    elements = []
-    for enum_value in self.parser.enum_values:
-      elements.append(_helpers.create_xml_dom_element(
-          doc, 'enum_value', enum_value))
-    return elements
+    return [_helpers.create_xml_dom_element(
+          doc, 'enum_value', enum_value) for enum_value in self.parser.enum_values]
 
 
 class MultiFlag(Flag):

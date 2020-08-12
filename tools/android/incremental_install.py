@@ -399,8 +399,8 @@ def UploadDexes(adb, execroot, app_dir, temp_dir, dexmanifest, full_install):
   # Figure out which dexes to upload: those that are present in the new manifest
   # but not in the old one and those whose checksum was changed
   common_dexes = set(new_manifest).intersection(old_manifest)
-  dexes_to_upload = set(d for d in common_dexes
-                        if new_manifest[d].sha256 != old_manifest[d].sha256)
+  dexes_to_upload = {d for d in common_dexes
+                          if new_manifest[d].sha256 != old_manifest[d].sha256}
   dexes_to_upload.update(set(new_manifest) - set(old_manifest))
 
   if not dexes_to_delete and not dexes_to_upload:
@@ -417,8 +417,8 @@ def UploadDexes(adb, execroot, app_dir, temp_dir, dexmanifest, full_install):
 
   # Sort dexes to be uploaded by the zip file they are in so that we only need
   # to open each zip only once.
-  dexzips_in_upload = set(new_manifest[d].input_file for d in dexes_to_upload
-                          if new_manifest[d].zippath != "-")
+  dexzips_in_upload = {new_manifest[d].input_file for d in dexes_to_upload
+                            if new_manifest[d].zippath != "-"}
   for i, dexzip_name in enumerate(dexzips_in_upload):
     zip_dexes = [
         d for d in dexes_to_upload if new_manifest[d].input_file == dexzip_name]
@@ -431,8 +431,10 @@ def UploadDexes(adb, execroot, app_dir, temp_dir, dexmanifest, full_install):
                               targetpath.join(dex_dir, dex)))
 
   # Now gather all the dexes that are not within a .zip file.
-  dexes_to_upload = set(
-      d for d in dexes_to_upload if new_manifest[d].zippath == "-")
+  dexes_to_upload = {
+      d
+      for d in dexes_to_upload if new_manifest[d].zippath == "-"
+  }
   for dex in dexes_to_upload:
     files_to_push.append((new_manifest[dex].input_file, targetpath.join(
         dex_dir, dex)))
@@ -668,9 +670,9 @@ def SplitIncrementalInstall(adb, app_package, execroot, split_main_apk,
         name, checksum = manifest_line.split(" ")
         device_checksums[name] = checksum
 
-  install_checksums = {}
-  install_checksums["__MAIN__"] = Checksum(
-      hostpath.join(execroot, split_main_apk))
+  install_checksums = {
+      "__MAIN__": Checksum(hostpath.join(execroot, split_main_apk))
+  }
   for apk in split_apks:
     install_checksums[apk] = Checksum(hostpath.join(execroot, apk))
 

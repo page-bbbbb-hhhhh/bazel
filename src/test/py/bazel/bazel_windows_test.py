@@ -125,8 +125,8 @@ class BazelWindowsTest(test_base.TestBase):
         'load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")',
         'load(":repo.bzl", "my_repo")',
         'my_repo(name = "env_test")',
+        *self.GetDefaultRepoRules(),
     ]
-    rule_definition.extend(self.GetDefaultRepoRules())
     self.ScratchFile('WORKSPACE', rule_definition)
     self.ScratchFile('repo.bzl', [
         'def my_repo_impl(repository_ctx):',

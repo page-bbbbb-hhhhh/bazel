@@ -284,8 +284,7 @@ class BooleanParser(ArgumentParser):
     raise ValueError('Non-boolean argument to boolean flag', argument)
 
   def parse(self, argument):
-    val = self.convert(argument)
-    return val
+    return self.convert(argument)
 
   def flag_type(self):
     return 'bool'

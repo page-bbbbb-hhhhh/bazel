@@ -522,10 +522,7 @@ class TestCase(unittest.TestCase):
 
     if first == second:
       return
-    if msg:
-      failure_message = [msg + ':\n']
-    else:
-      failure_message = ['\n']
+    failure_message = [msg + ':\n'] if msg else ['\n']
     if line_limit:
       line_limit += len(failure_message)
     for line in difflib.ndiff(first.splitlines(True), second.splitlines(True)):
@@ -805,12 +802,13 @@ class TestCase(unittest.TestCase):
     last_string = None
     for string in strings:
       index = target.find(str(string), current_index)
-      if index == -1 and current_index == 0:
-        self.fail("Did not find '%s' in '%s'" %
-                  (string, target), msg)
-      elif index == -1:
-        self.fail("Did not find '%s' after '%s' in '%s'" %
-                  (string, last_string, target), msg)
+      if index == -1:
+        if current_index == 0:
+          self.fail("Did not find '%s' in '%s'" %
+                    (string, target), msg)
+        else:
+          self.fail("Did not find '%s' after '%s' in '%s'" %
+                    (string, last_string, target), msg)
       last_string = string
       current_index = index
 

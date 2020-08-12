@@ -74,11 +74,7 @@ def BuildSplitManifest(main_manifest, override_package, split, hascode):
   manifest = ElementTree.fromstring(main_manifest)
   android_namespace_prefix = "{http://schemas.android.com/apk/res/android}"
 
-  if override_package:
-    package = override_package
-  else:
-    package = manifest.get("package")
-
+  package = override_package if override_package else manifest.get("package")
   version_code = manifest.get(android_namespace_prefix + "versionCode")
   version_name = manifest.get(android_namespace_prefix + "versionName")
 

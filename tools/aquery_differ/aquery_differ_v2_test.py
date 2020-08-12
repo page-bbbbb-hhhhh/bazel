@@ -113,8 +113,8 @@ class CmdLineDifferTest(unittest.TestCase):
             },
         ])
     mock_stdout = StringIO()
-    attrs = ["cmdline"]
     with mock.patch("sys.stdout", mock_stdout):
+      attrs = ["cmdline"]
       aquery_differ._aquery_diff(action_graph, action_graph, attrs, "before",
                                  "after")
       self.assertEqual(mock_stdout.getvalue(), "No difference\n")
@@ -183,8 +183,8 @@ class CmdLineDifferTest(unittest.TestCase):
         ])
 
     mock_stdout = StringIO()
-    attrs = ["cmdline"]
     with mock.patch("sys.stdout", mock_stdout):
+      attrs = ["cmdline"]
       aquery_differ._aquery_diff(first, second, attrs, "before", "after")
       self.assertEqual(mock_stdout.getvalue(), "No difference\n")
 
@@ -263,8 +263,8 @@ class CmdLineDifferTest(unittest.TestCase):
                       "that generates the following outputs that aquery "
                       "output 'after' change doesn't:\n{}\n\n".format(baz_path))
     mock_stdout = StringIO()
-    attrs = ["cmdline"]
     with mock.patch("sys.stdout", mock_stdout):
+      attrs = ["cmdline"]
       aquery_differ._aquery_diff(first, second, attrs, "before", "after")
       self.assertEqual(mock_stdout.getvalue(), expected_error)
 
@@ -368,10 +368,10 @@ class CmdLineDifferTest(unittest.TestCase):
         "\t{}".format(bar_path), "\t{}".format(foo_path), "--- before",
         "+++ after", "@@ -1,2 +1,2 @@", " -a", "--d", "+-b", "\n"
     ])
-    attrs = ["cmdline"]
-
     mock_stdout = StringIO()
     with mock.patch("sys.stdout", mock_stdout):
+      attrs = ["cmdline"]
+
       aquery_differ._aquery_diff(first, second, attrs, "before", "after")
       self.assertIn(expected_error_one, mock_stdout.getvalue())
       self.assertIn(expected_error_two, mock_stdout.getvalue())
@@ -460,10 +460,10 @@ class CmdLineDifferTest(unittest.TestCase):
         "+++ after", "@@ -1,2 +1 @@", "-{}".format(bar_path),
         " {}".format(foo_path), "\n"
     ])
-    attrs = ["inputs"]
-
     mock_stdout = StringIO()
     with mock.patch("sys.stdout", mock_stdout):
+      attrs = ["inputs"]
+
       aquery_differ._aquery_diff(first, second, attrs, "before", "after")
       self.assertIn(expected_error_one, mock_stdout.getvalue())
 

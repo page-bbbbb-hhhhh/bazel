@@ -128,10 +128,7 @@ class TarFileWriter(object):
           2000-01-01, which is compatible with non *nix OSes'.
       preserve_tar_mtimes: if true, keep file mtimes from input tar file.
     """
-    if compression in ['bzip2', 'bz2']:
-      mode = 'w:bz2'
-    else:
-      mode = 'w:'
+    mode = 'w:bz2' if compression in ['bzip2', 'bz2'] else 'w:'
     self.gz = compression in ['tgz', 'gz']
     # Support xz compression through xz... until we can use Py3
     self.xz = compression in ['xz', 'lzma']

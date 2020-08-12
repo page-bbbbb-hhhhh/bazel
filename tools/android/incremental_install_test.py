@@ -49,70 +49,70 @@ class MockAdb(object):
     self.abi = "armeabi-v7a"
 
   def Exec(self, args):
-    if self._error:
-      error_info, arg = self._error  # pylint: disable=unpacking-non-sequence
-      if not arg or arg in args:
-        return self._CreatePopenMock(*error_info)
+      if self._error:
+        error_info, arg = self._error  # pylint: disable=unpacking-non-sequence
+        if not arg or arg in args:
+          return self._CreatePopenMock(*error_info)
 
-    returncode = 0
-    stdout = ""
-    stderr = ""
-    cmd = args[1]
-    if cmd == "push":
-      # "/test/adb push local remote"
-      with open(args[2], "rb") as f:
-        content = f.read().decode("utf-8")
-      self.files[args[3]] = content
-    elif cmd == "pull":
-      # "/test/adb pull remote local"
-      remote = args[2]
-      local = args[3]
-      content = self.files.get(remote)
-      if content is not None:
-        with open(local, "wb") as f:
-          f.write(six.ensure_binary(content, "utf-8"))
-      else:
-        returncode = 1
-        stderr = "remote object '%s' does not exist\n" % remote
-    elif cmd == "install":
-      self.package_timestamp = self._last_package_timestamp
-      self._last_package_timestamp += 1
-      return self._CreatePopenMock(0, "Success", "")
-    elif cmd == "install-multiple":
-      if args[3] == "-p":
-        with open(args[5], "rb") as f:
-          content = f.read().decode("utf-8")
-        self.split_apks.add(content)
-      else:
+      returncode = 0
+      stdout = ""
+      stderr = ""
+      cmd = args[1]
+      if cmd == "push":
+          # "/test/adb push local remote"
+          with open(args[2], "rb") as f:
+            content = f.read().decode("utf-8")
+          self.files[args[3]] = content
+      elif cmd == "pull":
+          # "/test/adb pull remote local"
+          remote = args[2]
+          content = self.files.get(remote)
+          if content is not None:
+              local = args[3]
+              with open(local, "wb") as f:
+                f.write(six.ensure_binary(content, "utf-8"))
+          else:
+              returncode = 1
+              stderr = "remote object '%s' does not exist\n" % remote
+      elif cmd == "install":
         self.package_timestamp = self._last_package_timestamp
         self._last_package_timestamp += 1
-      return self._CreatePopenMock(0, "Success", "")
-    elif cmd == "uninstall":
-      self._CreatePopenMock(0, "Success", "")
-      self.split_apks = set()
-      self.package_timestamp = None
-    elif cmd == "shell":
-      # "/test/adb shell ..."
-      # mkdir, rm, am (application manager), or monkey
-      shell_cmdln = args[2]
-      self.shell_cmdlns.append(shell_cmdln)
-      if shell_cmdln.startswith(("mkdir", "am", "monkey", "input")):
-        pass
-      elif six.ensure_str(shell_cmdln).startswith("dumpsys package "):
-        if self.package_timestamp is not None:
-          timestamp = "firstInstallTime=%s" % self.package_timestamp
+        return self._CreatePopenMock(0, "Success", "")
+      elif cmd == "install-multiple":
+        if args[3] == "-p":
+          with open(args[5], "rb") as f:
+            content = f.read().decode("utf-8")
+          self.split_apks.add(content)
         else:
-          timestamp = ""
-        return self._CreatePopenMock(0, timestamp, "")
-      elif six.ensure_str(shell_cmdln).startswith("rm"):
-        file_path = shell_cmdln.split()[2]
-        self.files.pop(file_path, None)
-      elif six.ensure_str(shell_cmdln).startswith("getprop ro.product.cpu.abi"):
-        return self._CreatePopenMock(0, self.abi, "")
-      else:
-        raise Exception("Unknown shell command line: %s" % shell_cmdln)
-    # Return a mock subprocess.Popen object
-    return self._CreatePopenMock(returncode, stdout, stderr)
+          self.package_timestamp = self._last_package_timestamp
+          self._last_package_timestamp += 1
+        return self._CreatePopenMock(0, "Success", "")
+      elif cmd == "uninstall":
+        self._CreatePopenMock(0, "Success", "")
+        self.split_apks = set()
+        self.package_timestamp = None
+      elif cmd == "shell":
+        # "/test/adb shell ..."
+        # mkdir, rm, am (application manager), or monkey
+        shell_cmdln = args[2]
+        self.shell_cmdlns.append(shell_cmdln)
+        if shell_cmdln.startswith(("mkdir", "am", "monkey", "input")):
+          pass
+        elif six.ensure_str(shell_cmdln).startswith("dumpsys package "):
+          if self.package_timestamp is not None:
+            timestamp = "firstInstallTime=%s" % self.package_timestamp
+          else:
+            timestamp = ""
+          return self._CreatePopenMock(0, timestamp, "")
+        elif six.ensure_str(shell_cmdln).startswith("rm"):
+          file_path = shell_cmdln.split()[2]
+          self.files.pop(file_path, None)
+        elif six.ensure_str(shell_cmdln).startswith("getprop ro.product.cpu.abi"):
+          return self._CreatePopenMock(0, self.abi, "")
+        else:
+          raise Exception("Unknown shell command line: %s" % shell_cmdln)
+      # Return a mock subprocess.Popen object
+      return self._CreatePopenMock(returncode, stdout, stderr)
 
   def _CreatePopenMock(self, returncode, stdout, stderr):
     return mock.Mock(

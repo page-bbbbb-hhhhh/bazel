@@ -35,9 +35,9 @@ import sys
 
 
 def main():
-  outdir = sys.argv[3]
   with open(sys.argv[1]) as obj_file_list:
     with open(sys.argv[2], 'w') as hashed_obj_file_list:
+      outdir = sys.argv[3]
       for line in obj_file_list:
         obj_file_path = line.rstrip('\n')
 

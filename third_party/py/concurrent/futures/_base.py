@@ -197,16 +197,13 @@ def as_completed(fs, timeout=None):
         end_time = timeout + time.time()
 
     with _AcquireFutures(fs):
-        finished = set(
-                f for f in fs
-                if f._state in [CANCELLED_AND_NOTIFIED, FINISHED])
+        finished = {f for f in fs
+                        if f._state in [CANCELLED_AND_NOTIFIED, FINISHED]}
         pending = set(fs) - finished
         waiter = _create_and_install_waiters(fs, _AS_COMPLETED)
 
     try:
-        for future in finished:
-            yield future
-
+        yield from finished
         while pending:
             if timeout is None:
                 wait_timeout = None
@@ -259,8 +256,8 @@ def wait(fs, timeout=None, return_when=ALL_COMPLETED):
         futures.
     """
     with _AcquireFutures(fs):
-        done = set(f for f in fs
-                   if f._state in [CANCELLED_AND_NOTIFIED, FINISHED])
+        done = {f for f in fs
+                           if f._state in [CANCELLED_AND_NOTIFIED, FINISHED]}
         not_done = set(fs) - done
 
         if (return_when == FIRST_COMPLETED) and done:

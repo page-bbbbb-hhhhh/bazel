@@ -221,10 +221,8 @@ class FlagValues(object):
       return True
     # Check whether flag_obj is registered under its short name.
     short_name = flag_obj.short_name
-    if (short_name is not None and
-        flag_dict.get(short_name, None) == flag_obj):
-      return True
-    return False
+    return (short_name is not None and
+        flag_dict.get(short_name, None) == flag_obj)
 
   def _cleanup_unregistered_flag_from_module_dicts(self, flag_obj):
     """Cleans up unregistered flags from all module -> [flags] dictionaries.
@@ -919,10 +917,7 @@ class FlagValues(object):
       flagset[flag] = 1
       flaghelp = ''
       if flag.short_name: flaghelp += '-%s,' % flag.short_name
-      if flag.boolean:
-        flaghelp += '--[no]%s:' % flag.name
-      else:
-        flaghelp += '--%s:' % flag.name
+      flaghelp += '--[no]%s:' % flag.name if flag.boolean else '--%s:' % flag.name
       flaghelp += ' '
       if flag.help:
         flaghelp += flag.help
@@ -1104,7 +1099,7 @@ class FlagValues(object):
       if self._is_flag_file_directive(current_arg):
         # This handles the case of -(-)flagfile foo.  In this case the
         # next arg really is part of this one.
-        if current_arg == '--flagfile' or current_arg == '-flagfile':
+        if current_arg in ['--flagfile', '-flagfile']:
           if not rest_of_args:
             raise _exceptions.IllegalFlagValueError(
                 '--flagfile with no argument')

@@ -95,7 +95,7 @@ def main():
       help='The output mapping file')
 
   args, _ = parser.parse_known_args()
-  class_to_header_map = dict()
+  class_to_header_map = {}
 
   # Process the source files.
   if args.source_files:

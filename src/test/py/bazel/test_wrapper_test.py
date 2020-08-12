@@ -118,36 +118,36 @@ class TestWrapperTest(test_base.TestBase):
         dst_path='foo/testargs.exe',
         executable=True)
 
-    # A single white pixel as an ".ico" file. /usr/bin/file should identify this
-    # as "image/x-icon".
-    # The MIME type lookup logic of the test wrapper only looks at file names,
-    # but the test-setup.sh calls /usr/bin/file which inspects file contents, so
-    # we need a valid ".ico" file.
-    ico_file = bytearray([
-        0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x01, 0x00, 0x00, 0x01, 0x00,
-        0x18, 0x00, 0x30, 0x00, 0x00, 0x00, 0x16, 0x00, 0x00, 0x00, 0x28, 0x00,
-        0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x01, 0x00,
-        0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00
-    ])
-    # 16 bytes of random data. /usr/bin/file should identify this as
-    # "application/octet-stream".
-    # The MIME type lookup logic of the test wrapper only looks at file names,
-    # but the test-setup.sh calls /usr/bin/file which inspects file contents, so
-    # we need a valid ".ico" file.
-    dat_file = bytearray([
-        0x40, 0x5a, 0x2e, 0x7e, 0x53, 0x86, 0x98, 0x0e, 0x12, 0xc4, 0x92, 0x38,
-        0x27, 0xcd, 0x09, 0xf9
-    ])
-
     ico_file_path = self.ScratchFile('foo/dummy.ico').replace('/', '\\')
     dat_file_path = self.ScratchFile('foo/dummy.dat').replace('/', '\\')
 
     with open(ico_file_path, 'wb') as f:
+      # A single white pixel as an ".ico" file. /usr/bin/file should identify this
+      # as "image/x-icon".
+      # The MIME type lookup logic of the test wrapper only looks at file names,
+      # but the test-setup.sh calls /usr/bin/file which inspects file contents, so
+      # we need a valid ".ico" file.
+      ico_file = bytearray([
+          0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x01, 0x00, 0x00, 0x01, 0x00,
+          0x18, 0x00, 0x30, 0x00, 0x00, 0x00, 0x16, 0x00, 0x00, 0x00, 0x28, 0x00,
+          0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x01, 0x00,
+          0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+          0x00, 0x00, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00
+      ])
       f.write(ico_file)
 
     with open(dat_file_path, 'wb') as f:
+      # 16 bytes of random data. /usr/bin/file should identify this as
+      # "application/octet-stream".
+      # The MIME type lookup logic of the test wrapper only looks at file names,
+      # but the test-setup.sh calls /usr/bin/file which inspects file contents, so
+      # we need a valid ".ico" file.
+      dat_file = bytearray([
+          0x40, 0x5a, 0x2e, 0x7e, 0x53, 0x86, 0x98, 0x0e, 0x12, 0xc4, 0x92, 0x38,
+          0x27, 0xcd, 0x09, 0xf9
+      ])
+
       f.write(dat_file)
 
     self.CopyFile(
@@ -452,10 +452,10 @@ class TestWrapperTest(test_base.TestBase):
     ] + flags)
     self.AssertExitCode(exit_code, 0, stderr)
 
-    actual = []
-    for line in stderr + stdout:
-      if line.startswith('arg='):
-        actual.append(str(line[len('arg='):]))
+    actual = [
+        str(line[len('arg='):]) for line in stderr + stdout
+        if line.startswith('arg=')
+    ]
     self.assertListEqual(
         [
             '(foo)',
@@ -632,9 +632,9 @@ class TestWrapperTest(test_base.TestBase):
   def testRunningTestFromExternalRepo(self):
     rule_definition = [
         'load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")',
-        'local_repository(name = "a", path = "a")'
+        'local_repository(name = "a", path = "a")',
+        *self.GetDefaultRepoRules(),
     ]
-    rule_definition.extend(self.GetDefaultRepoRules())
     self.ScratchFile('WORKSPACE', rule_definition)
     self.CreateWorkspaceWithDefaultRepos('a/WORKSPACE')
     self.ScratchFile('BUILD', ['py_test(name = "x", srcs = ["x.py"])'])

@@ -14,6 +14,7 @@
 
 """A Python test reporter that generates test reports in JUnit XML format."""
 
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -30,7 +31,7 @@ import six
 
 
 # See http://www.w3.org/TR/REC-xml/#NT-Char
-_bad_control_character_codes = set(range(0, 0x20)) - {0x9, 0xA, 0xD}
+_bad_control_character_codes = set(range(0x20)) - {0x9, 0xA, 0xD}
 
 
 _control_character_conversions = {
@@ -206,19 +207,19 @@ class _TestSuiteResult(object):
         break
 
   def print_xml_summary(self, stream):
-    overall_test_count = sum([len(x) for x in self.suites.values()])
+    overall_test_count = sum(len(x) for x in self.suites.values())
     overall_failures = sum(self.failure_counts.values())
     overall_errors = sum(self.error_counts.values())
     overall_time = 0
     for tests in self.suites.values():
-      overall_time += sum([x.run_time for x in tests])
+      overall_time += sum(x.run_time for x in tests)
     overall_args = (overall_test_count, overall_failures, overall_errors,
                     overall_time)
     stream.write('<testsuites name="" tests="%d" failures="%d" '
                  'errors="%d" time="%.1f">\n' % overall_args)
     for suite_name in self.suites:
       suite = self.suites[suite_name]
-      suite_time = sum([x.run_time for x in suite])
+      suite_time = sum(x.run_time for x in suite)
       failures = self.failure_counts[suite_name]
       errors = self.error_counts[suite_name]
       args = (suite_name, len(suite), failures, errors, suite_time)

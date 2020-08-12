@@ -328,11 +328,8 @@ class EnumFlag(Flag):
     self.help = '<%s>: %s' % ('|'.join(enum_values), self.help)
 
   def _extra_xml_dom_elements(self, doc):
-    elements = []
-    for enum_value in self.parser.enum_values:
-      elements.append(_helpers.CreateXMLDOMElement(
-          doc, 'enum_value', enum_value))
-    return elements
+    return [_helpers.CreateXMLDOMElement(
+          doc, 'enum_value', enum_value) for enum_value in self.parser.enum_values]
 
 
 class MultiFlag(Flag):

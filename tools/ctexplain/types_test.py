@@ -24,8 +24,7 @@ class TypesTest(unittest.TestCase):
   def testConfigurationIsHashable(self):
     options = frozendict({'o1': frozendict({'k1': 'v1'})})
     c = Configuration(fragments=('F1'), options=options)
-    some_dict = {}
-    some_dict[c] = 4
+    some_dict = {c: 4}
 
   def testConfigurationHashAccuracy(self):
     d = {}

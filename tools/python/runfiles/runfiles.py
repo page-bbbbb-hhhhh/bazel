@@ -275,9 +275,9 @@ def _PathsFrom(argv0, runfiles_mf, runfiles_dir, is_runfiles_manifest,
   if not mf_alid:
     runfiles_mf = runfiles_dir + "/MANIFEST"
     mf_alid = is_runfiles_manifest(runfiles_mf)
-    if not mf_alid:
-      runfiles_mf = runfiles_dir + "_manifest"
-      mf_alid = is_runfiles_manifest(runfiles_mf)
+  if not mf_alid:
+    runfiles_mf = runfiles_dir + "_manifest"
+    mf_alid = is_runfiles_manifest(runfiles_mf)
 
   if not dir_valid:
     runfiles_dir = runfiles_mf[:-9]  # "_manifest" or "/MANIFEST"

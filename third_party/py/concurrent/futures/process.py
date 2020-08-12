@@ -330,9 +330,8 @@ class ProcessPoolExecutor(_base.Executor):
     def shutdown(self, wait=True):
         with self._shutdown_lock:
             self._shutdown_thread = True
-        if wait:
-            if self._queue_management_thread:
-                self._queue_management_thread.join()
+        if wait and self._queue_management_thread:
+            self._queue_management_thread.join()
         # To reduce the risk of openning too many files, remove references to
         # objects that use file descriptors.
         self._queue_management_thread = None
